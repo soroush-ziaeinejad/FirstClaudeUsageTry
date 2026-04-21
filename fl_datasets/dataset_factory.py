@@ -1,8 +1,8 @@
-from datasets.cifar import load_cifar10, load_cifar100
-from datasets.femnist import load_femnist
-from datasets.shakespeare import load_shakespeare
-from datasets.medmnist import load_medmnist
-from datasets.isic import load_isic
+from fl_datasets.cifar import load_cifar10, load_cifar100
+from fl_datasets.femnist import load_femnist
+from fl_datasets.shakespeare import load_shakespeare
+from fl_datasets.medmnist import load_medmnist
+from fl_datasets.isic import load_isic
 
 
 def get_dataset(name: str, client_id: int, num_clients: int, alpha: float, config: dict):

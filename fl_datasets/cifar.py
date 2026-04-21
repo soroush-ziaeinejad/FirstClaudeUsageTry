@@ -1,7 +1,7 @@
 import torchvision.transforms as T
 import torchvision.datasets as dsets
 from torch.utils.data import DataLoader
-from datasets.partitioning import get_client_subset
+from fl_datasets.partitioning import get_client_subset
 
 _CIFAR10_MEAN = (0.4914, 0.4822, 0.4465)
 _CIFAR10_STD = (0.2023, 0.1994, 0.2010)

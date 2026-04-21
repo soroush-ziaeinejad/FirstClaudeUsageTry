@@ -1,0 +1,278 @@
+{
+  "config": {
+    "dataset": "cifar10",
+    "num_clients": 10,
+    "clients_per_round": 4,
+    "num_rounds": 10,
+    "alpha": 0.5,
+    "local_epochs": 1,
+    "lr": 0.01,
+    "batch_size": 32,
+    "data_dir": "./data",
+    "cpus_per_client": 1,
+    "gpus_per_client": 0.0,
+    "ray_object_store_mb": 2048
+  },
+  "results": {
+    "fedavg": [
+      {
+        "round": 1,
+        "loss": 1.8705998191833495,
+        "accuracy": 0.3868
+      },
+      {
+        "round": 2,
+        "loss": 1.5392161039352417,
+        "accuracy": 0.4506
+      },
+      {
+        "round": 3,
+        "loss": 1.6454139865875244,
+        "accuracy": 0.4597
+      },
+      {
+        "round": 4,
+        "loss": 1.4366788000106812,
+        "accuracy": 0.5302
+      },
+      {
+        "round": 5,
+        "loss": 1.2209511289596557,
+        "accuracy": 0.565
+      },
+      {
+        "round": 6,
+        "loss": 1.4536784149169921,
+        "accuracy": 0.5641
+      },
+      {
+        "round": 7,
+        "loss": 1.2399827459335326,
+        "accuracy": 0.571
+      },
+      {
+        "round": 8,
+        "loss": 1.38242660446167,
+        "accuracy": 0.5944
+      },
+      {
+        "round": 9,
+        "loss": 1.1706150995254516,
+        "accuracy": 0.609
+      },
+      {
+        "round": 10,
+        "loss": 1.1145269733428955,
+        "accuracy": 0.6301
+      }
+    ],
+    "fedprox": [
+      {
+        "round": 1,
+        "loss": 2.109391316986084,
+        "accuracy": 0.2304
+      },
+      {
+        "round": 2,
+        "loss": 1.9288108587265014,
+        "accuracy": 0.2797
+      },
+      {
+        "round": 3,
+        "loss": 1.841071353149414,
+        "accuracy": 0.3314
+      },
+      {
+        "round": 4,
+        "loss": 1.6557402711868285,
+        "accuracy": 0.349
+      },
+      {
+        "round": 5,
+        "loss": 1.4015009086608887,
+        "accuracy": 0.477
+      },
+      {
+        "round": 6,
+        "loss": 1.4260333944320678,
+        "accuracy": 0.515
+      },
+      {
+        "round": 7,
+        "loss": 1.3867954481124878,
+        "accuracy": 0.5317
+      },
+      {
+        "round": 8,
+        "loss": 1.1856260416030884,
+        "accuracy": 0.5733
+      },
+      {
+        "round": 9,
+        "loss": 1.1756068216323852,
+        "accuracy": 0.5724
+      },
+      {
+        "round": 10,
+        "loss": 1.2657539806365967,
+        "accuracy": 0.542
+      }
+    ],
+    "poc": [
+      {
+        "round": 1,
+        "loss": 2.023935326766968,
+        "accuracy": 0.2198
+      },
+      {
+        "round": 2,
+        "loss": 1.7359182872772216,
+        "accuracy": 0.3985
+      },
+      {
+        "round": 3,
+        "loss": 1.5871065029144287,
+        "accuracy": 0.442
+      },
+      {
+        "round": 4,
+        "loss": 1.4544070432662963,
+        "accuracy": 0.4587
+      },
+      {
+        "round": 5,
+        "loss": 1.4261424472808837,
+        "accuracy": 0.5051
+      },
+      {
+        "round": 6,
+        "loss": 1.4413966356277466,
+        "accuracy": 0.5234
+      },
+      {
+        "round": 7,
+        "loss": 1.2781794403076172,
+        "accuracy": 0.5367
+      },
+      {
+        "round": 8,
+        "loss": 1.2189842441558838,
+        "accuracy": 0.5488
+      },
+      {
+        "round": 9,
+        "loss": 1.245804656791687,
+        "accuracy": 0.5843
+      },
+      {
+        "round": 10,
+        "loss": 1.2248079959869385,
+        "accuracy": 0.5535
+      }
+    ],
+    "oort": [
+      {
+        "round": 1,
+        "loss": 2.0187499683380126,
+        "accuracy": 0.2814
+      },
+      {
+        "round": 2,
+        "loss": 1.895732084465027,
+        "accuracy": 0.3052
+      },
+      {
+        "round": 3,
+        "loss": 1.7693675827026367,
+        "accuracy": 0.3633
+      },
+      {
+        "round": 4,
+        "loss": 1.7585470611572265,
+        "accuracy": 0.409
+      },
+      {
+        "round": 5,
+        "loss": 1.617483325958252,
+        "accuracy": 0.4249
+      },
+      {
+        "round": 6,
+        "loss": 1.5809497966766357,
+        "accuracy": 0.4552
+      },
+      {
+        "round": 7,
+        "loss": 1.3580121772766114,
+        "accuracy": 0.5054
+      },
+      {
+        "round": 8,
+        "loss": 1.3091619760513307,
+        "accuracy": 0.5128
+      },
+      {
+        "round": 9,
+        "loss": 1.2883428743362426,
+        "accuracy": 0.5296
+      },
+      {
+        "round": 10,
+        "loss": 1.1408897459030152,
+        "accuracy": 0.584
+      }
+    ],
+    "llmfed": [
+      {
+        "round": 1,
+        "loss": 1.9736401485443116,
+        "accuracy": 0.2757
+      },
+      {
+        "round": 2,
+        "loss": 1.7578591156005858,
+        "accuracy": 0.3736
+      },
+      {
+        "round": 3,
+        "loss": 1.691604049873352,
+        "accuracy": 0.3818
+      },
+      {
+        "round": 4,
+        "loss": 1.6681590808868407,
+        "accuracy": 0.3727
+      },
+      {
+        "round": 5,
+        "loss": 1.5946425022125243,
+        "accuracy": 0.4139
+      },
+      {
+        "round": 6,
+        "loss": 1.4201900058746337,
+        "accuracy": 0.4766
+      },
+      {
+        "round": 7,
+        "loss": 1.4177789510726928,
+        "accuracy": 0.4991
+      },
+      {
+        "round": 8,
+        "loss": 1.4634657043457031,
+        "accuracy": 0.4804
+      },
+      {
+        "round": 9,
+        "loss": 1.3795773664474487,
+        "accuracy": 0.5023
+      },
+      {
+        "round": 10,
+        "loss": 1.3057044387817383,
+        "accuracy": 0.5338
+      }
+    ]
+  }
+}

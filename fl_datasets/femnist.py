@@ -5,7 +5,7 @@ Dirichlet partitioning when the full LEAF download is not available.
 import torchvision.transforms as T
 import torchvision.datasets as dsets
 from torch.utils.data import DataLoader
-from datasets.partitioning import get_client_subset
+from fl_datasets.partitioning import get_client_subset
 
 
 def load_femnist(client_id, num_clients, alpha, config):

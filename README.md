@@ -177,7 +177,38 @@ Log entries include:
 
 ---
 
-## Results (smoke test — 5 rounds, CIFAR-10, 10 clients, α=0.5)
+## Results — CIFAR-10, 10 clients, 4/round, α=0.5, 10 rounds
+
+### Full Baseline Comparison
+
+| Method | Best Acc | Best Round | Acc@R5 | Acc@R10 | Final Loss | Gain R1→R10 |
+|---|---|---|---|---|---|---|
+| **FedAvg** | **63.01%** | R10 | 56.50% | **63.01%** | 1.1145 | +24.3% |
+| OORT | 58.40% | R10 | 42.49% | 58.40% | 1.1409 | +30.3% |
+| PoC | 58.43% | R9 | 50.51% | 55.35% | 1.2248 | +33.4% |
+| FedProx | 57.33% | R8 | 47.70% | 54.20% | 1.2658 | +31.2% |
+| **LLMFed (Ours)** | 53.38% | R10 | 41.39% | 53.38% | 1.3057 | +25.8% |
+
+> **Note:** With only 10 clients and 4 selected/round, the embedding-based diversity selection has limited variance to exploit — LLMFed's advantage is expected to emerge at larger scale (100–200 clients, α≤0.5). Full cross-device experiments (200 clients, 100 rounds) are in progress.
+
+### Per-Round Accuracy Progression
+
+| Round | FedAvg | FedProx | PoC | OORT | LLMFed |
+|---|---|---|---|---|---|
+| 1 | 38.68% | 23.04% | 21.98% | 28.14% | 27.57% |
+| 2 | 45.06% | 27.97% | 39.85% | 30.52% | 37.36% |
+| 3 | 45.97% | 33.14% | 44.20% | 36.33% | 38.18% |
+| 4 | 53.02% | 34.90% | 45.87% | 40.90% | 37.27% |
+| 5 | 56.50% | 47.70% | 50.51% | 42.49% | 41.39% |
+| 6 | 56.41% | 51.50% | 52.34% | 45.52% | 47.66% |
+| 7 | 57.10% | 53.17% | 53.67% | 50.54% | 49.91% |
+| 8 | 59.44% | **57.33%** | 54.88% | 51.28% | 48.04% |
+| 9 | 60.90% | 57.24% | **58.43%** | 52.96% | 50.23% |
+| 10 | **63.01%** | 54.20% | 55.35% | **58.40%** | **53.38%** |
+
+*Convergence plot saved to `comparison.png`. Raw data in `comparison_results.json`.*
+
+### Smoke Test (5 rounds, FedAvg)
 
 | Round | Loss | Accuracy |
 |---|---|---|
@@ -186,8 +217,6 @@ Log entries include:
 | 3 | 1.5711 | 40.4% |
 | 4 | 1.5339 | 42.4% |
 | 5 | 1.3879 | **49.9%** |
-
-*Full experiment results (100 rounds, all baselines) to be added after experiments complete.*
 
 ---
 

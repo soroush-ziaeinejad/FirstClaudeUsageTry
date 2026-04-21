@@ -43,7 +43,7 @@ def run_one(method: str, cfg: dict) -> list:
     import ray
     import flwr as fl
     from flwr.common import ndarrays_to_parameters
-    from datasets.dataset_factory import get_dataset
+    from fl_datasets.dataset_factory import get_dataset
     from client.models import get_model
     from simulation.run_simulation import make_client_fn
     from experiments.run_experiment import get_strategy

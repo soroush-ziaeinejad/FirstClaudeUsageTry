@@ -134,7 +134,7 @@ def main():
     console.print("[dim]Starting Flower simulation...[/dim]\n")
 
     from experiments.run_experiment import get_strategy
-    from datasets.dataset_factory import get_dataset
+    from fl_datasets.dataset_factory import get_dataset
     from client.models import get_model
     from simulation.run_simulation import make_client_fn
     from flwr.common import ndarrays_to_parameters

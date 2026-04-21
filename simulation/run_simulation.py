@@ -13,7 +13,7 @@ import yaml
 import flwr as fl
 from flwr.common import ndarrays_to_parameters
 
-from datasets.dataset_factory import get_dataset
+from fl_datasets.dataset_factory import get_dataset
 from client.fl_client import FLClient
 from client.models import get_model
 from strategy.llm_fed_strategy import LLMFedStrategy

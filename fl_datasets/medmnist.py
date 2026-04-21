@@ -1,6 +1,6 @@
 import torchvision.transforms as T
 from torch.utils.data import DataLoader
-from datasets.partitioning import get_client_subset
+from fl_datasets.partitioning import get_client_subset
 
 _SUBSETS = {
     "pathmnist": 9,

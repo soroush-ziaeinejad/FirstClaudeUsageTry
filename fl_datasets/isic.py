@@ -9,7 +9,7 @@ import torchvision.transforms as T
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader, random_split
 import torch
-from datasets.partitioning import get_client_subset
+from fl_datasets.partitioning import get_client_subset
 
 
 def load_isic(client_id, num_clients, alpha, config):
