@@ -1,0 +1,12 @@
+dataset: cifar10
+num_clients: 10
+clients_per_round: 4
+num_rounds: 10
+alpha: 0.5
+local_epochs: 1
+lr: 0.01
+batch_size: 32
+data_dir: ./data
+cpus_per_client: 1
+gpus_per_client: 0.0
+ray_object_store_mb: 2048
