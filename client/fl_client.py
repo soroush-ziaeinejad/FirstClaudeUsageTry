@@ -35,7 +35,9 @@ class FLClient(fl.client.NumPyClient):
     def set_parameters(self, parameters: NDArrays):
         state_dict = self.model.state_dict()
         for key, val in zip(state_dict.keys(), parameters):
-            state_dict[key] = torch.tensor(val, device=self.device)
+            # Create on CPU first then move — torch.tensor(device='mps') is unreliable
+            t = torch.as_tensor(val).to(dtype=state_dict[key].dtype).to(self.device)
+            state_dict[key] = t
         self.model.load_state_dict(state_dict, strict=True)
 
     # ------------------------------------------------------------------

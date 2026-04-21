@@ -63,6 +63,10 @@ def run_one(method: str, cfg: dict) -> list:
     strategy = get_strategy(method, cfg, init_params, num_classes, logger=log)
     strategy._num_rounds = cfg["num_rounds"]
 
+    # Shutdown any leftover Ray session before starting fresh
+    if ray.is_initialized():
+        ray.shutdown()
+
     fl.simulation.start_simulation(
         client_fn=make_client_fn(cfg, num_classes),
         num_clients=cfg["num_clients"],
@@ -78,7 +82,7 @@ def run_one(method: str, cfg: dict) -> list:
         },
     )
 
-    # Shutdown Ray between runs to free memory
+    # Always shut down after each run to free memory for the next method
     if ray.is_initialized():
         ray.shutdown()
 
