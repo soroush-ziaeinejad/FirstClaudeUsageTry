@@ -1,0 +1,11 @@
+dataset: pathmnist
+num_clients: 20
+clients_per_round: 8
+num_rounds: 80
+alpha: 0.3
+local_epochs: 2
+lr: 0.01
+batch_size: 32
+data_dir: ./data
+cpus_per_client: 1
+gpus_per_client: 0.0

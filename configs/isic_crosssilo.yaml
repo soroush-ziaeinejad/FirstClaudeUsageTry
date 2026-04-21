@@ -1,0 +1,11 @@
+dataset: isic
+num_clients: 20
+clients_per_round: 8
+num_rounds: 60
+alpha: 0.5
+local_epochs: 2
+lr: 0.001
+batch_size: 16
+data_dir: ./data
+cpus_per_client: 2
+gpus_per_client: 0.0

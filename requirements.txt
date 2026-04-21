@@ -1,0 +1,10 @@
+flwr[simulation]>=1.8.0
+torch>=2.2.0
+torchvision>=0.17.0
+sentence-transformers>=2.7.0
+scikit-learn>=1.4.0
+numpy>=1.26.0
+pyyaml>=6.0
+medmnist>=3.0.0
+wandb>=0.17.0
+tqdm>=4.66.0

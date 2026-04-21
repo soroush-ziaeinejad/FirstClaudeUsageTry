@@ -1,0 +1,11 @@
+dataset: shakespeare
+num_clients: 100
+clients_per_round: 10
+num_rounds: 80
+alpha: 1.0           # Not used (sequential split), kept for API consistency
+local_epochs: 1
+lr: 0.001
+batch_size: 64
+data_dir: ./data
+cpus_per_client: 1
+gpus_per_client: 0.0
