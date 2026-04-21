@@ -15,7 +15,10 @@ results*.png
 *.png
 wandb/
 runs/
-logs/
+
+# Logs — keep the directory but not the log files
+logs/*.log
+!logs/.gitkeep
 
 # Jupyter
 .ipynb_checkpoints/

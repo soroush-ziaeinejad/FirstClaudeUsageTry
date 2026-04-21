@@ -38,12 +38,21 @@ class LLMClusterStrategy(LLMFedStrategy):
         unknown = [c for c in available if c.cid not in known]
 
         if len(known) < budget:
-            # Not enough history yet — random fallback for warm-up rounds
+            if self.logger:
+                self.logger.info(
+                    f"[Round {server_round}] LLMCluster: warm-up (known={len(known)} < budget={budget}), random fallback"
+                )
             return random.sample(available, budget)
 
         # Embed known clients
+        import time as _time
+        t0 = _time.time()
         embedder = EmbeddingModule.get()
         embeddings = embedder.embed(known)
+        embed_time = _time.time() - t0
+
+        if self.logger:
+            self.logger.embedding_info(num_embedded=len(embeddings), elapsed=embed_time)
 
         selected_cids = cluster_and_sample(
             embeddings=embeddings,

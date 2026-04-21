@@ -24,6 +24,7 @@ from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeEl
 from rich import box
 
 from strategy.client_registry import ClientRegistry
+from utils.logger import ExperimentLogger
 
 console = Console()
 
@@ -44,6 +45,7 @@ class LLMFedStrategy(fl.server.strategy.Strategy):
         lr: float = 0.01,
         num_classes: int = 10,
         initial_parameters: Optional[Parameters] = None,
+        logger: Optional[ExperimentLogger] = None,
     ):
         self.num_clients_per_round = num_clients_per_round
         self.min_fit_clients = min_fit_clients
@@ -58,6 +60,7 @@ class LLMFedStrategy(fl.server.strategy.Strategy):
         self._history: List[Dict] = []  # [{round, loss, accuracy}]
         self._round_start: float = 0.0
         self._num_rounds: int = 0  # set externally for progress display
+        self.logger: Optional[ExperimentLogger] = logger
 
     # ------------------------------------------------------------------
     # Selection hook — override in subclass for LLM-based selection
@@ -86,7 +89,18 @@ class LLMFedStrategy(fl.server.strategy.Strategy):
         self._round_start = time.time()
         client_manager.wait_for(self.min_available_clients)
         available = list(client_manager.all().values())
+
+        if self.logger:
+            self.logger.round_start(server_round, len(available))
+
         selected = self.select_clients(available, server_round)
+
+        if self.logger:
+            self.logger.selection(
+                method=self.__class__.__name__,
+                selected_cids=[c.cid for c in selected],
+                server_round=server_round,
+            )
 
         fit_config = {
             "server_round": server_round,
@@ -112,6 +126,14 @@ class LLMFedStrategy(fl.server.strategy.Strategy):
                 current_round=server_round,
                 num_classes=self.num_classes,
             )
+            if self.logger:
+                self.logger.client_fit(
+                    cid=client.cid,
+                    loss=fit_res.metrics.get("train_loss", 0),
+                    grad_norm=fit_res.metrics.get("grad_norm", 0),
+                    latency=fit_res.metrics.get("latency", 0),
+                    num_samples=fit_res.num_examples,
+                )
 
         # FedAvg weighted aggregation
         weights = [(parameters_to_ndarrays(r.parameters), r.num_examples)
@@ -141,7 +163,15 @@ class LLMFedStrategy(fl.server.strategy.Strategy):
         accuracy = float(np.mean([r.metrics.get("accuracy", 0) for _, r in results]))
         round_time = time.time() - self._round_start
 
+        num_trained = sum(r.num_examples for _, r in results)
         self._history.append({"round": server_round, "loss": loss, "accuracy": accuracy})
+
+        if self.logger:
+            self.logger.round_end(
+                server_round=server_round, loss=loss, accuracy=accuracy,
+                elapsed=round_time, num_trained=num_trained, failures=len(failures),
+            )
+
         self._print_round_summary(server_round, loss, accuracy, round_time)
         return loss, {"accuracy": accuracy}
 

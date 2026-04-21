@@ -21,7 +21,7 @@ from simulation.run_simulation import make_client_fn
 AVAILABLE_METHODS = ["fedavg", "fedprox", "poc", "oort", "llmfed"]
 
 
-def get_strategy(method: str, cfg: dict, init_params, num_classes: int):
+def get_strategy(method: str, cfg: dict, init_params, num_classes: int, logger=None):
     base_kwargs = dict(
         num_clients_per_round=cfg["clients_per_round"],
         min_fit_clients=cfg["clients_per_round"],
@@ -31,6 +31,7 @@ def get_strategy(method: str, cfg: dict, init_params, num_classes: int):
         lr=cfg.get("lr", 0.01),
         num_classes=num_classes,
         initial_parameters=init_params,
+        logger=logger,
     )
 
     if method == "fedavg":
@@ -61,7 +62,7 @@ def get_strategy(method: str, cfg: dict, init_params, num_classes: int):
         raise ValueError(f"Unknown method '{method}'. Available: {AVAILABLE_METHODS}")
 
 
-def run(cfg: dict, method: str = "fedavg", plot_path: str = None) -> fl.server.History:
+def run(cfg: dict, method: str = "fedavg", plot_path: str = None, logger=None) -> fl.server.History:
     _, _, num_classes = get_dataset(
         name=cfg["dataset"], client_id=0, num_clients=cfg["num_clients"],
         alpha=cfg["alpha"], config=cfg,
@@ -71,7 +72,7 @@ def run(cfg: dict, method: str = "fedavg", plot_path: str = None) -> fl.server.H
         [val.cpu().numpy() for val in init_model.state_dict().values()]
     )
 
-    strategy = get_strategy(method, cfg, init_params, num_classes)
+    strategy = get_strategy(method, cfg, init_params, num_classes, logger=logger)
     strategy._num_rounds = cfg["num_rounds"]
 
     history = fl.simulation.start_simulation(

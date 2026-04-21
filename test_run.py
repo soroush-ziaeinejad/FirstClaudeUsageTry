@@ -124,17 +124,22 @@ def main():
     with open(args.config) as f:
         cfg = yaml.safe_load(f)
 
+    from utils.logger import get_logger
+    log = get_logger(method=args.method, cfg=cfg)
+
     console.print(Rule(f"[bold blue]FL Experiment — {args.method.upper()}[/bold blue]"))
     print_config_panel(cfg)
     print_device_info()
+    console.print(f"  [dim]Log → {log.log_path}[/dim]\n")
     console.print("[dim]Starting Flower simulation...[/dim]\n")
 
-    from experiments.run_experiment import run, get_strategy
+    from experiments.run_experiment import get_strategy
     from datasets.dataset_factory import get_dataset
     from client.models import get_model
     from simulation.run_simulation import make_client_fn
     from flwr.common import ndarrays_to_parameters
     import flwr as fl
+    import time as _time
 
     _, _, num_classes = get_dataset(
         name=cfg["dataset"], client_id=0, num_clients=cfg["num_clients"],
@@ -145,9 +150,10 @@ def main():
         [val.cpu().numpy() for val in init_model.state_dict().values()]
     )
 
-    strategy = get_strategy(args.method, cfg, init_params, num_classes)
+    strategy = get_strategy(args.method, cfg, init_params, num_classes, logger=log)
     strategy._num_rounds = cfg["num_rounds"]
 
+    t_start = _time.time()
     fl.simulation.start_simulation(
         client_fn=make_client_fn(cfg, num_classes),
         num_clients=cfg["num_clients"],
@@ -162,6 +168,7 @@ def main():
             "object_store_memory": cfg.get("ray_object_store_mb", 2048) * 1024 * 1024,
         },
     )
+    total_time = _time.time() - t_start
 
     console.print()
     console.print(Rule("[bold green]Results[/bold green]"))
@@ -169,12 +176,15 @@ def main():
 
     if strategy._history:
         best = max(strategy._history, key=lambda h: h["accuracy"])
+        log.experiment_end(best["round"], best["accuracy"], total_time)
         console.print(
             f"\n[bold]Best accuracy:[/bold] [green]{best['accuracy']*100:.2f}%[/green] "
             f"at round [cyan]{best['round']}[/cyan]\n"
         )
         plot_path = plot_results(strategy._history, cfg, save_path=args.plot)
-        console.print(f"[bold]Plot saved →[/bold] [underline]{os.path.abspath(plot_path)}[/underline]\n")
+        log.info(f"Plot saved → {os.path.abspath(plot_path)}")
+        console.print(f"[bold]Plot saved →[/bold] [underline]{os.path.abspath(plot_path)}[/underline]")
+        console.print(f"[bold]Log  saved →[/bold] [underline]{log.log_path}[/underline]\n")
 
     console.print(Rule())
 
