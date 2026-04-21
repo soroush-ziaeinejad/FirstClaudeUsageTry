@@ -4,7 +4,12 @@
       "Bash(conda run *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Read(//Users/soroushziaeinejad/opt/anaconda3/bin/**)",
+      "Read(//Users/soroushziaeinejad/miniconda3/bin/**)",
+      "Read(//opt/homebrew/anaconda3/bin/**)",
+      "Read(//Users/soroushziaeinejad/**)",
+      "Bash(python3 *)"
     ]
   }
 }

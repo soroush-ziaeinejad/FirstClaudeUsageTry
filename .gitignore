@@ -1,0 +1,35 @@
+# Data
+data/
+*.tar.gz
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Results / outputs
+results*.png
+*.png
+wandb/
+runs/
+logs/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Env
+.env
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# macOS
+.DS_Store

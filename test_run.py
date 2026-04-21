@@ -102,23 +102,37 @@ def print_config_panel(cfg: dict):
                         border_style="cyan", expand=False))
 
 
+def print_device_info():
+    import torch
+    if torch.backends.mps.is_available():
+        dev = "[bold green]MPS (Apple Silicon GPU)[/bold green]"
+    elif torch.cuda.is_available():
+        dev = f"[bold green]CUDA ({torch.cuda.get_device_name(0)})[/bold green]"
+    else:
+        dev = "[yellow]CPU[/yellow]"
+    console.print(f"  Device: {dev}\n")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="configs/cifar10_test.yaml")
+    parser.add_argument("--method", default="fedavg",
+                        choices=["fedavg", "fedprox", "poc", "oort", "llmfed"])
     parser.add_argument("--plot", default="results.png", help="Where to save the plot")
     args = parser.parse_args()
 
     with open(args.config) as f:
         cfg = yaml.safe_load(f)
 
-    console.print(Rule("[bold blue]FL Experiment — FLLLM[/bold blue]"))
+    console.print(Rule(f"[bold blue]FL Experiment — {args.method.upper()}[/bold blue]"))
     print_config_panel(cfg)
-    console.print()
+    print_device_info()
     console.print("[dim]Starting Flower simulation...[/dim]\n")
 
-    from simulation.run_simulation import run, build_strategy, make_client_fn
+    from experiments.run_experiment import run, get_strategy
     from datasets.dataset_factory import get_dataset
     from client.models import get_model
+    from simulation.run_simulation import make_client_fn
     from flwr.common import ndarrays_to_parameters
     import flwr as fl
 
@@ -131,7 +145,7 @@ def main():
         [val.cpu().numpy() for val in init_model.state_dict().values()]
     )
 
-    strategy = build_strategy(cfg, num_classes, init_params)
+    strategy = get_strategy(args.method, cfg, init_params, num_classes)
     strategy._num_rounds = cfg["num_rounds"]
 
     fl.simulation.start_simulation(
@@ -142,6 +156,10 @@ def main():
         client_resources={
             "num_cpus": cfg.get("cpus_per_client", 1),
             "num_gpus": cfg.get("gpus_per_client", 0.0),
+        },
+        ray_init_args={
+            "include_dashboard": False,
+            "object_store_memory": cfg.get("ray_object_store_mb", 2048) * 1024 * 1024,
         },
     )
 
@@ -155,7 +173,6 @@ def main():
             f"\n[bold]Best accuracy:[/bold] [green]{best['accuracy']*100:.2f}%[/green] "
             f"at round [cyan]{best['round']}[/cyan]\n"
         )
-
         plot_path = plot_results(strategy._history, cfg, save_path=args.plot)
         console.print(f"[bold]Plot saved →[/bold] [underline]{os.path.abspath(plot_path)}[/underline]\n")
 
