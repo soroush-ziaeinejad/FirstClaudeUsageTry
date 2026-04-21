@@ -1,0 +1,12 @@
+# Tiny smoke-test config — runs fast to verify the full pipeline works
+dataset: cifar10
+num_clients: 10
+clients_per_round: 4
+num_rounds: 5
+alpha: 0.5
+local_epochs: 1
+lr: 0.01
+batch_size: 32
+data_dir: ./data
+cpus_per_client: 1
+gpus_per_client: 0.0

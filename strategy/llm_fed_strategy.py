@@ -4,7 +4,8 @@ Phase 1 — ships with plain FedAvg aggregation.
 Phase 3 — will swap in the LLM+clustering selector (see embedding_module.py / clustering.py).
 """
 import random
-from typing import Dict, List, Optional, Tuple, Union
+import time
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import flwr as fl
@@ -15,7 +16,16 @@ from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 from flwr.server.strategy.aggregate import aggregate, weighted_loss_avg
 
+from rich.console import Console
+from rich.table import Table
+from rich.live import Live
+from rich.panel import Panel
+from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
+from rich import box
+
 from strategy.client_registry import ClientRegistry
+
+console = Console()
 
 
 class LLMFedStrategy(fl.server.strategy.Strategy):
@@ -45,6 +55,9 @@ class LLMFedStrategy(fl.server.strategy.Strategy):
         self.initial_parameters = initial_parameters
         self.registry = ClientRegistry()
         self._current_round = 0
+        self._history: List[Dict] = []  # [{round, loss, accuracy}]
+        self._round_start: float = 0.0
+        self._num_rounds: int = 0  # set externally for progress display
 
     # ------------------------------------------------------------------
     # Selection hook — override in subclass for LLM-based selection
@@ -70,6 +83,7 @@ class LLMFedStrategy(fl.server.strategy.Strategy):
         self, server_round: int, parameters: Parameters, client_manager: ClientManager
     ) -> List[Tuple[ClientProxy, FitIns]]:
         self._current_round = server_round
+        self._round_start = time.time()
         client_manager.wait_for(self.min_available_clients)
         available = list(client_manager.all().values())
         selected = self.select_clients(available, server_round)
@@ -125,8 +139,34 @@ class LLMFedStrategy(fl.server.strategy.Strategy):
             return None, {}
         loss = weighted_loss_avg([(r.num_examples, r.loss) for _, r in results])
         accuracy = float(np.mean([r.metrics.get("accuracy", 0) for _, r in results]))
-        print(f"[Round {server_round}] loss={loss:.4f}  accuracy={accuracy:.4f}")
+        round_time = time.time() - self._round_start
+
+        self._history.append({"round": server_round, "loss": loss, "accuracy": accuracy})
+        self._print_round_summary(server_round, loss, accuracy, round_time)
         return loss, {"accuracy": accuracy}
+
+    def _print_round_summary(self, server_round: int, loss: float,
+                             accuracy: float, elapsed: float):
+        total = self._num_rounds or "?"
+        bar_len = 20
+        filled = int(bar_len * server_round / self._num_rounds) if self._num_rounds else 0
+        bar = "█" * filled + "░" * (bar_len - filled)
+
+        # Trend arrows
+        if len(self._history) >= 2:
+            prev = self._history[-2]
+            loss_arrow = "↓" if loss < prev["loss"] else "↑"
+            acc_arrow = "↑" if accuracy > prev["accuracy"] else "↓"
+        else:
+            loss_arrow = acc_arrow = " "
+
+        console.print(
+            f"  [bold cyan]Round {server_round:>3}/{total}[/]  "
+            f"[{bar}]  "
+            f"loss [yellow]{loss:.4f}[/] {loss_arrow}  "
+            f"acc [green]{accuracy:.4f}[/] {acc_arrow}  "
+            f"[dim]{elapsed:.1f}s[/]"
+        )
 
     def evaluate(
         self, server_round: int, parameters: Parameters
