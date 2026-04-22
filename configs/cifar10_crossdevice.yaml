@@ -1,11 +1,13 @@
 dataset: cifar10
 num_clients: 200
-clients_per_round: 20
+clients_per_round: 20       # 10% participation rate
 num_rounds: 100
-alpha: 0.5          # Dirichlet non-IID degree (lower = more heterogeneous)
+alpha: 0.5                  # Dirichlet non-IID degree (lower = more heterogeneous)
 local_epochs: 1
 lr: 0.01
 batch_size: 32
 data_dir: ./data
+mu: 0.01                    # FedProx proximal coefficient
 cpus_per_client: 1
-gpus_per_client: 0.0
+gpus_per_client: 0.0        # Keep 0.0 — Ray VCE doesn't expose GPU per virtual client
+ray_object_store_mb: 16384  # 16 GB — increase on server as needed

@@ -13,8 +13,17 @@ __pycache__/
 # Results / outputs
 results*.png
 *.png
+results/*.png
+results/*.json
 wandb/
 runs/
+
+# Keep results dir
+!results/.gitkeep
+
+# SLURM logs
+logs/slurm_*.out
+logs/slurm_*.err
 
 # Logs — keep the directory but not the log files
 logs/*.log
