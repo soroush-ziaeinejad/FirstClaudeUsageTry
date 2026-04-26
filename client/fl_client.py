@@ -19,6 +19,12 @@ class FLClient(fl.client.NumPyClient):
         self.train_loader = train_loader
         self.test_loader = test_loader
         self.num_classes = num_classes
+        # Prevent each Ray actor from spawning all cores' worth of threads.
+        # cpus_per_client controls how many CPU slots Ray reserves; torch threads
+        # should match so total threads == reserved CPUs, not reserved × all_cores.
+        n_threads = int(config.get("torch_num_threads", config.get("cpus_per_client", 2)))
+        torch.set_num_threads(n_threads)
+        torch.set_num_interop_threads(1)
         self.device = get_device()
         self.model.to(self.device)
         self.profile = ClientProfile(client_id=client_id, num_classes=num_classes)

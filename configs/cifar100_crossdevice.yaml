@@ -5,7 +5,9 @@ num_rounds: 150
 alpha: 0.5
 local_epochs: 2
 lr: 0.01
-batch_size: 32
+batch_size: 64
 data_dir: ./data
-cpus_per_client: 1
+cpus_per_client: 2
 gpus_per_client: 0.0
+torch_num_threads: 2
+ray_object_store_mb: 20480

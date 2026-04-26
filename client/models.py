@@ -1,30 +1,36 @@
 """
-Lightweight models for each dataset type.
+Models for each dataset type.
 All return logits of shape (batch, num_classes).
 """
 import torch.nn as nn
 
 
-class SmallCNN(nn.Module):
-    """For CIFAR-10/100, FEMNIST, MedMNIST, ISIC (after resize to 32 or 224)."""
-    def __init__(self, in_channels: int, num_classes: int, img_size: int = 32):
+class ResNet50FL(nn.Module):
+    """ResNet-50 adapted for FL experiments across image datasets.
+
+    Two adaptations beyond stock torchvision ResNet-50:
+    - img_size < 64: replaces the 7×7 stride-2 stem with a 3×3 stride-1 conv and
+      removes the maxpool (standard CIFAR fix — otherwise 32px collapses before res stages).
+    - in_channels != 3: replaces conv1 to accept grayscale input.
+    The FC head is always replaced to match num_classes.
+    """
+    def __init__(self, in_channels: int = 3, num_classes: int = 10, img_size: int = 32):
         super().__init__()
-        self.features = nn.Sequential(
-            nn.Conv2d(in_channels, 32, 3, padding=1), nn.BatchNorm2d(32), nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.Conv2d(32, 64, 3, padding=1), nn.BatchNorm2d(64), nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.Conv2d(64, 128, 3, padding=1), nn.BatchNorm2d(128), nn.ReLU(),
-            nn.AdaptiveAvgPool2d(4),
-        )
-        self.classifier = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(128 * 4 * 4, 256), nn.ReLU(), nn.Dropout(0.3),
-            nn.Linear(256, num_classes),
-        )
+        from torchvision.models import resnet50
+        net = resnet50(weights=None)
+
+        if img_size < 64:
+            # Small-image stem: 3×3, stride=1, no maxpool
+            net.conv1 = nn.Conv2d(in_channels, 64, kernel_size=3, stride=1, padding=1, bias=False)
+            net.maxpool = nn.Identity()
+        elif in_channels != 3:
+            net.conv1 = nn.Conv2d(in_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
+
+        net.fc = nn.Linear(net.fc.in_features, num_classes)
+        self.net = net
 
     def forward(self, x):
-        return self.classifier(self.features(x))
+        return self.net(x)
 
 
 class CharLSTM(nn.Module):
@@ -44,10 +50,7 @@ def get_model(dataset_name: str, num_classes: int) -> nn.Module:
     name = dataset_name.lower()
     if name == "shakespeare":
         return CharLSTM(vocab_size=num_classes)
-    elif name in ("isic",):
-        return SmallCNN(in_channels=3, num_classes=num_classes, img_size=224)
-    elif name == "femnist":
-        return SmallCNN(in_channels=1, num_classes=num_classes)
-    else:
-        in_ch = 1 if name in ("medmnist", "pathmnist", "dermamnist", "bloodmnist") else 3
-        return SmallCNN(in_channels=in_ch, num_classes=num_classes)
+    # Grayscale datasets
+    in_ch = 1 if name in ("femnist", "medmnist", "tissuemnist") else 3
+    img_size = 224 if name == "isic" else 32
+    return ResNet50FL(in_channels=in_ch, num_classes=num_classes, img_size=img_size)

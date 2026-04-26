@@ -66,8 +66,12 @@ def run(cfg: dict) -> fl.server.History:
         config=fl.server.ServerConfig(num_rounds=cfg["num_rounds"]),
         strategy=strategy,
         client_resources={
-            "num_cpus": cfg.get("cpus_per_client", 1),
+            "num_cpus": cfg.get("cpus_per_client", 2),
             "num_gpus": cfg.get("gpus_per_client", 0.0),
+        },
+        ray_init_args={
+            "include_dashboard": False,
+            "object_store_memory": cfg.get("ray_object_store_mb", 8192) * 1024 * 1024,
         },
     )
     return history

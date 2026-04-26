@@ -5,9 +5,10 @@ num_rounds: 100
 alpha: 0.5                  # Dirichlet non-IID degree (lower = more heterogeneous)
 local_epochs: 1
 lr: 0.01
-batch_size: 32
+batch_size: 64
 data_dir: ./data
 mu: 0.01                    # FedProx proximal coefficient
-cpus_per_client: 1
-gpus_per_client: 0.0        # Keep 0.0 — Ray VCE doesn't expose GPU per virtual client
-ray_object_store_mb: 16384  # 16 GB — increase on server as needed
+cpus_per_client: 2          # 4 concurrent clients on 8-core; each gets 2 threads = 8 total
+gpus_per_client: 0.0        # r7i has no GPU — any value >0 hangs Ray scheduling
+torch_num_threads: 2        # intra-op threads per actor; must match cpus_per_client
+ray_object_store_mb: 20480  # 20 GB — keeps model params in memory, avoids disk spill

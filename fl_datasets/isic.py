@@ -42,6 +42,6 @@ def load_isic(client_id, num_clients, alpha, config):
     # Apply test transform to test split
     test_full.dataset.transform = tf_test
 
-    train_loader = DataLoader(subset, batch_size=batch_size, shuffle=True, num_workers=4)
-    test_loader = DataLoader(test_full, batch_size=batch_size, shuffle=False, num_workers=4)
+    train_loader = DataLoader(subset, batch_size=batch_size, shuffle=True, num_workers=0)
+    test_loader = DataLoader(test_full, batch_size=batch_size, shuffle=False, num_workers=0)
     return train_loader, test_loader, num_classes

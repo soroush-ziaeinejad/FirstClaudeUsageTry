@@ -5,7 +5,9 @@ num_rounds: 60
 alpha: 0.5
 local_epochs: 2
 lr: 0.001
-batch_size: 16
+batch_size: 16              # 224×224 images — keep small to fit 4 concurrent actors in RAM
 data_dir: ./data
 cpus_per_client: 2
 gpus_per_client: 0.0
+torch_num_threads: 2
+ray_object_store_mb: 12288

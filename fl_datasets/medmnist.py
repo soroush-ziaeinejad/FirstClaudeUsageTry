@@ -1,3 +1,4 @@
+import os
 import torchvision.transforms as T
 from torch.utils.data import DataLoader
 from fl_datasets.partitioning import get_client_subset
@@ -18,6 +19,7 @@ def load_medmnist(client_id, num_clients, alpha, config, subset="pathmnist"):
         raise ImportError("Install medmnist: pip install medmnist")
 
     data_dir = config.get("data_dir", "./data")
+    os.makedirs(data_dir, exist_ok=True)
     batch_size = config.get("batch_size", 32)
 
     info = INFO[subset]
@@ -43,6 +45,6 @@ def load_medmnist(client_id, num_clients, alpha, config, subset="pathmnist"):
     subset_ds = get_client_subset(train_wrapped, client_id, num_clients, alpha)
     test_wrapped = WrappedDS(test_ds)
 
-    train_loader = DataLoader(subset_ds, batch_size=batch_size, shuffle=True, num_workers=2)
-    test_loader = DataLoader(test_wrapped, batch_size=batch_size, shuffle=False, num_workers=2)
+    train_loader = DataLoader(subset_ds, batch_size=batch_size, shuffle=True, num_workers=0)
+    test_loader = DataLoader(test_wrapped, batch_size=batch_size, shuffle=False, num_workers=0)
     return train_loader, test_loader, num_classes
